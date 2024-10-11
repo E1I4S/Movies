@@ -13,9 +13,10 @@ let favoriteMovies = JSON.parse(localStorage.getItem('favorites')) || [];
 // Fetch and display popular movies
 async function fetchPopularMovies() {
     try {
-         const response = await fetch(`${apiUrl}/movie/popular?api_key=${apiKey}&language=es-ES&page=1`);
-          if (!response.ok) { // Verifica si la respuesta es correcta
+        const response = await fetch(`${apiUrl}/movie/popular?api_key=${apiKey}&language=es-ES&page=1`);
+        if (!response.ok) { // Verifica si la respuesta es correcta
             throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         displayMovies(data.results); // Muestra las películas populares
     } catch (error) {
@@ -40,16 +41,16 @@ function displayMovies(movies) {
 // Show movie details
 async function showMovieDetails(movieId) {
     try {
-    const response = await fetch(`${apiUrl}/movie/${movieId}?api_key=${apiKey}&language=es-ES`);
+        const response = await fetch(`${apiUrl}/movie/${movieId}?api_key=${apiKey}&language=es-ES`);
         const movie = await response.json();
-        
-        movieDetails.innerHTML = `
+
+        detailsContainer.innerHTML = ` 
             <h3>${movie.title}</h3>
             <p>${movie.overview}</p>
             <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
         `;
-        detailsContainer.style.display = 'block'; 
-        selectedMovieId = movie.id; 
+        movieDetails.classList.remove('hidden'); // Mostrar sección de detalles
+        selectedMovieId = movie.id;
     } catch (error) {
         console.error('Error fetching movie details:', error);
     }
@@ -57,7 +58,7 @@ async function showMovieDetails(movieId) {
 
 // Search movies
 searchButton.addEventListener('click', async () => {
-    const query = searchInput.value;
+    const query = searchInput.value.trim();
     if (query) {
         try {
             const response = await fetch(`${apiUrl}/search/movie?api_key=${apiKey}&language=es-ES&query=${encodeURIComponent(query)}&page=1`);
@@ -66,6 +67,8 @@ searchButton.addEventListener('click', async () => {
         } catch (error) {
             console.error('Error searching movies:', error);
         }
+    } else {
+        alert('Por favor ingresa un término de búsqueda.');
     }
 });
 
@@ -74,7 +77,7 @@ addToFavoritesButton.addEventListener('click', () => {
     if (selectedMovieId) {
         const favoriteMovie = {
             id: selectedMovieId,
-            title: document.querySelector('#details h3').textContent
+            title: document.querySelector('#details h3')?.textContent || document.querySelector('#details h3').textContent
         };
         if (!favoriteMovies.some(movie => movie.id === selectedMovieId)) {
             favoriteMovies.push(favoriteMovie);
@@ -97,4 +100,3 @@ function displayFavorites() {
 // Initial fetch of popular movies and display favorites
 fetchPopularMovies(); // Obtiene y muestra las películas populares
 displayFavorites(); // Muestra las películas favoritas guardadas
- 
