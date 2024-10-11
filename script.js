@@ -1,4 +1,4 @@
-const apiKey = 'ffc106b1c7147874af57180d7870b61c'; // Reemplaza con tu clave API
+const apiKey = ffc106b1c7147874af57180d7870b61c; // Reemplaza con tu clave API
 const apiUrl = 'https://api.themoviedb.org/3';
 const movieList = document.getElementById('movies');
 const movieDetails = document.getElementById('movie-details');
@@ -14,6 +14,8 @@ let favoriteMovies = JSON.parse(localStorage.getItem('favorites')) || [];
 async function fetchPopularMovies() {
     try {
          const response = await fetch(`${apiUrl}/movie/popular?api_key=${apiKey}&language=es-ES&page=1`);
+          if (!response.ok) { // Verifica si la respuesta es correcta
+            throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         displayMovies(data.results); // Muestra las películas populares
     } catch (error) {
